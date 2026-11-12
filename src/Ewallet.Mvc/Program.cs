@@ -14,9 +14,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 
-    app.MapScalarApiReference(options => 
+    app.MapScalarApiReference("/api",options => 
     {
-        options.EndpointPathPrefix = "/api";
+        options.Title = "Ewallet API";
     });
     
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

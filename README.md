@@ -30,7 +30,7 @@ Base URL: `/api`
 ### Clone Repository
 
 ```bash
-git clone https://github.com/bando9/koda-b1-weekly5
+git clone https://github.com/bando9/koda-b1-weekly6
 cd Ewallet.Mvc
 ```
 
@@ -44,18 +44,4 @@ Configure the SQL Server connection string in `appsettings.json` or user secrets
     "Ewalletdb": "Server=YOUR_SERVER;Database=EwalletDb;Trusted_Connection=True;TrustServerCertificate=True;"
   }
 }
-```
-
-```mermaid
-erDiagram
-    USERS ||--o| WALLETS : owns
-    WALLETS ||--o{ TRANSACTIONS : sends
-    WALLETS ||--o{ TRANSACTIONS : receives
-    TRANSACTIONS ||--o{ WALLET_MUTATIONS : generates
-    WALLETS ||--o{ WALLET_MUTATIONS : has
-    TRANSACTIONS ||--o| TOPUP_REQUESTS : has
-    WALLETS ||--o{ TOPUP_REQUESTS : receives
-    PAYMENT_METHODS ||--o{ TOPUP_REQUESTS : uses
-    USERS ||--o{ AUDIT_LOGS : performs
-    TRANSACTIONS ||--o{ AUDIT_LOGS : relates_to
 ```
