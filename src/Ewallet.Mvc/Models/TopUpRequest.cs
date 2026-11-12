@@ -5,7 +5,7 @@ public sealed class TopUpRequest
     public long Id	{get; private set;}
     public decimal Amount {get; private set;}
     public TopUpRequestStatusEnum Status {get; private set;}
-    public string? ProviderReference	{get; private set;} = string.Empty;
+    public string? ProviderReference	{get; private set;}
     public DateTime CreatedAtUtc	{get; private set;}
     public DateTime? ExpiresAtUtc	{get; private set;}
     public DateTime? PaidAtUtc	{get; private set;}

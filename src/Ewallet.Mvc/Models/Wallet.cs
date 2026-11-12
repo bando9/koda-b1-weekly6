@@ -8,14 +8,15 @@ public sealed class Wallet
     public WalletStatusEnum Status	{get; private set;}
     public byte[] RowVersion {get; private set;} = null!;
     public DateTime CreatedAtUtc {get; private set;}
-    public DateTime UpdatedAtUtc {get; private set;}
+    public DateTime? UpdatedAtUtc {get; private set;}
 
     // FK Users
     public long UserId	{get; private set;}
     public User User {get; private set;} = null!;
 
     // constraints
-    public ICollection<Transaction> Transactions {get; private set;} = new List<Transaction>();
+    public ICollection<Transaction> SentTransactions {get; private set;} = new List<Transaction>();
+    public ICollection<Transaction> ReceivedTransactions  {get; private set;} = new List<Transaction>();
     public ICollection<WalletMutation> WalletMutations {get; private set;} = new List<WalletMutation>();
     public ICollection<TopUpRequest> TopUpRequests {get; private set;} = new List<TopUpRequest>();
 

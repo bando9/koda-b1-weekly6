@@ -23,6 +23,8 @@ if (app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.MapGet("/", () => "Hello World! Ewallet is being constructed.");
+
 app.UseHttpsRedirection();
 app.UseRouting();
 

@@ -4,10 +4,10 @@ public sealed class Transaction
 {
     public long Id {get; private set;}
     public string ReferenceNo {get; private set;} = string.Empty;
-    public TransactionType Type {get; private set;}
+    public TransactionTypeEnum Type {get; private set;}
     public decimal Amount {get; private set;}
     public TransactionStatusEnum Status {get; private set;}
-    public string? Description {get; private set;}= string.Empty;
+    public string? Description {get; private set;}
     public DateTime CreatedAtUtc {get; private set;}
     public DateTime? CompletedAtUtc {get; private set;}
 
@@ -27,7 +27,7 @@ public sealed class Transaction
 
 }
 
-public enum TransactionType {
+public enum TransactionTypeEnum {
     TOPUP, 
     TRANSFER
 }
