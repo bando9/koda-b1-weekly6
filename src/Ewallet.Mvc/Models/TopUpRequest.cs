@@ -16,7 +16,7 @@ public sealed class TopUpRequest
     public long WalletId {get; private set;}
     public Wallet Wallet {get; private set;} = null!;
     public int PaymentMethodId {get; private set;}
-    public PaymentMethod PaymentMethod {get; private set;} = null!;
+    public PaymentMethod PaymentMethod {get; private set;} = null!; 
 }
 	
 public enum TopUpRequestStatusEnum{

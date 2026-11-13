@@ -1,3 +1,5 @@
+using Ewallet.Mvc.Data;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,11 +9,22 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddOpenApi();
 
+var connectionString = builder.Configuration.GetConnectionString("newEwallet") 
+    ?? throw new InvalidOperationException("ga bisa koneksi, belum konfigurasi");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+
+    app.MapOpenApi();
+
     app.UseExceptionHandler("/Home/Error");
 
     app.MapScalarApiReference("/api",options => 
@@ -22,6 +35,8 @@ if (app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+
 
 app.MapGet("/", () => "Hello World! Ewallet is being constructed.");
 
