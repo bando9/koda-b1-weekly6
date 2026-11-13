@@ -16,6 +16,19 @@ public sealed class User
     public Wallet? Wallet {get; private set;}
     public ICollection<AuditLog> AuditLogs {get; private set;} = new List<AuditLog>();
 
+
+    public User(long id,string userName, string fullName, string email, string phone, string? passwordHash, UserStatusEnum status)
+    {
+        Id=id;
+        Username=userName;
+        FullName=fullName;
+        Email=email;
+        Phone=phone;
+        PasswordHash=passwordHash;
+        Status=status;
+        CreatedAtUtc=DateTime.UtcNow.AddHours(7);
+    }
+
 }
 
 public enum UserStatusEnum {

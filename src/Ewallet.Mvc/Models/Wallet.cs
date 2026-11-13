@@ -20,6 +20,15 @@ public sealed class Wallet
     public ICollection<WalletMutation> WalletMutations {get; private set;} = new List<WalletMutation>();
     public ICollection<TopUpRequest> TopUpRequests {get; private set;} = new List<TopUpRequest>();
 
+    public Wallet(long id,string walletNumber, decimal balance,WalletStatusEnum status, long userId)
+    {
+        Id=id;
+        WalletNumber=walletNumber;
+        Balance=balance;
+        Status=status;
+        UserId=userId;
+    }
+
 
 
 }

@@ -24,6 +24,19 @@ public sealed class Transaction
     public ICollection<WalletMutation> WalletMutations {get; private set;} = new List<WalletMutation>();
     public ICollection<AuditLog> AuditLogs {get; private set;} = new List<AuditLog>();
 
+    public Transaction(long id, string referenceNo, TransactionTypeEnum type, decimal amount, TransactionStatusEnum status, string? description, DateTime createdAtUtc, DateTime? completedAtUtc, long? senderWalletId, long receiverWalletId)
+    {
+        Id = id;
+        ReferenceNo = referenceNo;
+        Type = type;
+        Amount = amount;
+        Status = status;
+        Description = description;
+        CreatedAtUtc = createdAtUtc;
+        CompletedAtUtc = completedAtUtc;
+        SenderWalletId = senderWalletId;
+        ReceiverWalletId = receiverWalletId;
+    }
 
 }
 
