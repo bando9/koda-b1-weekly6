@@ -8,12 +8,12 @@ public sealed class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options){}
 
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>(); 
-    public DbSet<PaymentMethod> PaymentMethod => Set<PaymentMethod>(); 
-    public DbSet<TopUpRequest> TopUpRequest => Set<TopUpRequest>();
-    public DbSet<Transaction> Transaction => Set<Transaction>();
-    public DbSet<User> User => Set<User>();
-    public DbSet<Wallet> Wallet => Set<Wallet>();
-    public DbSet<WalletMutation> WalletMutation => Set<WalletMutation>();
+    public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>(); 
+    public DbSet<TopUpRequest> TopUpRequests => Set<TopUpRequest>();
+    public DbSet<Transaction> Transactions => Set<Transaction>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Wallet> Wallets => Set<Wallet>();
+    public DbSet<WalletMutation> WalletMutations => Set<WalletMutation>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

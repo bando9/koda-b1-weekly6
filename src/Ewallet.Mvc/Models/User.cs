@@ -2,6 +2,7 @@ namespace Ewallet.Mvc.Models;
 
 public sealed class User
 {
+    private User() { }
     public long Id {get; private set;}
     public string Username {get; private set;} = string.Empty;
     public string FullName {get; private set;} = string.Empty;    

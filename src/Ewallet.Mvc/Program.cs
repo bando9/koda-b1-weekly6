@@ -1,4 +1,7 @@
 using Ewallet.Mvc.Data;
+using Ewallet.Mvc.Repositories;
+using Ewallet.Mvc.Repository;
+using Ewallet.Mvc.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -6,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddOpenApi();
 
@@ -36,9 +42,6 @@ if (app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-
-
-app.MapGet("/", () => "Hello World! Ewallet is being constructed.");
 
 app.UseHttpsRedirection();
 app.UseRouting();
