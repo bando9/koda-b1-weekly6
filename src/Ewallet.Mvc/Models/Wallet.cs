@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Ewallet.Mvc.Models;
 
 public sealed class Wallet
@@ -22,12 +24,12 @@ public sealed class Wallet
     public ICollection<WalletMutation> WalletMutations {get; private set;} = new List<WalletMutation>();
     public ICollection<TopUpRequest> TopUpRequests {get; private set;} = new List<TopUpRequest>();
 
-    public Wallet(long id, string walletNumber, long userId,decimal balance = 0)
+    public Wallet(long id, string walletNumber, long userId,WalletStatusEnum status,decimal balance = 0)
     {        
         Id=id;
         WalletNumber=walletNumber;
         Balance = balance >= 0 ? balance : throw new ArgumentException("Saldo gaboleh kurang dari 0");
-        Status = WalletStatusEnum.ACTIVE;
+        Status = status;
         UserId=userId;
         CreatedAtUtc=DateTime.UtcNow;
         UpdatedAtUtc=null;
@@ -36,6 +38,8 @@ public sealed class Wallet
 
 
 }
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 
 public enum WalletStatusEnum {
     ACTIVE, 

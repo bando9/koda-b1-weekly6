@@ -1,4 +1,5 @@
 using Ewallet.Mvc.Data;
+using Ewallet.Mvc.DTOs;
 using Ewallet.Mvc.Models;
 using Ewallet.Mvc.Repositories;
 using Microsoft.Data.SqlClient;
@@ -10,14 +11,21 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
 {
     private readonly AppDbContext _db = db;
 
-    public async Task<IReadOnlyList<User>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<User>> GetAllAsync(CancellationToken ct)
     {
-        return await _db.Users.AsNoTracking().ToListAsync(cancellationToken);
+        return await _db.Users.AsNoTracking().ToListAsync(ct);
     }
 
-    public async Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken)
+    public async Task<User?> GetByIdAsync(long id, CancellationToken ct)
     {
-        return await _db.Users.AsNoTracking().FirstOrDefaultAsync(u=>u.Id == id,cancellationToken);
+        return await _db.Users.AsNoTracking().FirstOrDefaultAsync(u=>u.Id == id,ct);
+    }
+
+    public async Task<UserDetailResponse?> GetDetailByIdAsync(long id, CancellationToken ct)
+    {
+        var user = await _db.Users.AsNoTracking().Include(u => u.Wallet).FirstOrDefaultAsync(u=>u.Id == id,ct);
+
+        return user is null ? null : UserDetailResponse.FromModel(user);
     }
 
     public async Task<long> CreateAsync(User user, CancellationToken ct){
@@ -32,14 +40,6 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
         await _db.SaveChangesAsync(ct);
 
     }
-
-    // public async Task<User?> GetConflictUserAsync(string username, string email, string phone, CancellationToken ct)
-    // {
-    //     return await _db.Users
-    //         .AsNoTracking()
-    //         .FirstOrDefaultAsync(u => u.Username == username || u.Email 
-    //         == email || u.Phone == phone, ct);
-    // }
 
     public async Task<User?> GetConflictUserAsync(string username,string email, string phone, CancellationToken ct)
     {

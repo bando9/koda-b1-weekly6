@@ -8,5 +8,10 @@ public interface IUserService
 
     Task<UserResponse?> GetByIdAsync(long id, CancellationToken ct);
 
+    Task<UserDetailResponse?> GetDetailByIdAsync(long id, CancellationToken ct);
+    
+    
     Task<UserResponse?> CreateWithWalletAsync(UserRequest request,CancellationToken ct);
+
+
 }

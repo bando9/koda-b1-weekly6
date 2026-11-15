@@ -22,7 +22,6 @@ public sealed class UserService(IUserRepository repository,AppDbContext context)
 
     public async Task<UserResponse?> GetByIdAsync(long id, CancellationToken ct)
     {
-        
         if (id < 0)
         {
             return null!;
@@ -32,6 +31,8 @@ public sealed class UserService(IUserRepository repository,AppDbContext context)
 
         return user is null ? null : UserResponse.FromModel(user);
     }
+
+    public Task<UserDetailResponse?> GetDetailByIdAsync(long id, CancellationToken ct) => _repository.GetDetailByIdAsync(id,ct);
 
     public async Task<UserResponse?> CreateWithWalletAsync(UserRequest request,CancellationToken ct)
     {
@@ -61,7 +62,7 @@ public sealed class UserService(IUserRepository repository,AppDbContext context)
 
             long userId = await _repository.CreateAsync(user,ct);
 
-            var wallet = new Wallet(0,GenerateWalletNumber(),userId);
+            var wallet = new Wallet(0,GenerateWalletNumber(),userId, WalletStatusEnum.ACTIVE);
             
             await _repository.CreateWalletAsync(wallet,ct);
 
@@ -81,14 +82,6 @@ public sealed class UserService(IUserRepository repository,AppDbContext context)
             throw;
         }
     }
-
-
-    // public async Task<WalletResponse?> CreateWithWalletAsync(User user, Wallet wallet, CancellationToken ct)
-    // {        
-    //     var wallet = new Wallet(0,GenerateWalletNumber(), 100,0);
-    //     var created = await _repository.TryAddWithWalletAsync(wallet, ct);
-    //     return created ? WalletResponse.FromModel(wallet) : null;        
-    // }
 
 
     private static string GenerateWalletNumber()

@@ -29,6 +29,15 @@ public sealed class UserController(IUserService service) : ControllerBase
         return user is null ? Problem(statusCode: StatusCodes.Status404NotFound, title: "User not found") : Ok(user);
     }
 
+    [HttpGet("{id}/detail")]
+    [ProducesResponseType(typeof(IReadOnlyList<UserDetailResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<UserDetailResponse>), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<UserDetailResponse>>> GetDetailById(long id, CancellationToken ct)
+    {
+        var user = await _service.GetDetailByIdAsync(id,ct);
+        return user is null ? Problem(statusCode: StatusCodes.Status404NotFound, title: "User not found") : Ok(user);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(WalletResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
