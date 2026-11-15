@@ -32,15 +32,18 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
     app.UseExceptionHandler("/Home/Error");
+    
 
     app.MapScalarApiReference("/api",options => 
     {
         options.Title = "Ewallet API";
     });
     
+    app.MapGet("/", () => Results.Redirect("/api"));
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 
 
 app.UseHttpsRedirection();

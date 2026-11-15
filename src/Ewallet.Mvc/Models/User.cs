@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Ewallet.Mvc.Models;
 
 public sealed class User
@@ -32,6 +34,8 @@ public sealed class User
 
 }
 
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UserStatusEnum {
     ACTIVE, 
     SUSPENDED

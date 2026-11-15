@@ -4,16 +4,17 @@ namespace Ewallet.Mvc.Repositories;
 
 public interface IUserRepository
 {
-    // Create User + Wallet
     Task<IReadOnlyList<User>> GetAllAsync(CancellationToken cancellationToken);
 
-    Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken);
+    Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken);
+    
+    Task<long> CreateAsync(User user, CancellationToken ct);
 
-    // Task<int?> TryAddWithWalletAsync(User user, Wallet wallet, CancellationToken cancellationToken);
-
-    // Task<bool> TryUpdateAsync(User user, CancellationToken cancellationToken);
+    Task CreateWalletAsync(Wallet wallet, CancellationToken ct);
 
 
 
+
+    Task<User?> GetConflictUserAsync(string username,string email, string phone, CancellationToken ct);
 
 };

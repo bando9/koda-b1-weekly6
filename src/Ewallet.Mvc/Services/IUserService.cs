@@ -6,5 +6,7 @@ public interface IUserService
 {
     Task<IReadOnlyList<UserResponse>> GetAllAsync(CancellationToken ct);
 
-    Task<UserResponse> GetByIdAsync(CancellationToken ct);
+    Task<UserResponse?> GetByIdAsync(long id, CancellationToken ct);
+
+    Task<UserResponse?> CreateWithWalletAsync(UserRequest request,CancellationToken ct);
 }

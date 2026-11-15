@@ -2,6 +2,8 @@ namespace Ewallet.Mvc.Models;
 
 public sealed class Wallet
 {
+    private Wallet() { }
+
     public long Id {get; private set;}
     public string WalletNumber	{get; private set;} = string.Empty;
     public decimal Balance	{get; private set;}
@@ -20,13 +22,15 @@ public sealed class Wallet
     public ICollection<WalletMutation> WalletMutations {get; private set;} = new List<WalletMutation>();
     public ICollection<TopUpRequest> TopUpRequests {get; private set;} = new List<TopUpRequest>();
 
-    public Wallet(long id,string walletNumber, decimal balance,WalletStatusEnum status, long userId)
-    {
+    public Wallet(long id, string walletNumber, long userId,decimal balance = 0)
+    {        
         Id=id;
         WalletNumber=walletNumber;
-        Balance=balance;
-        Status=status;
+        Balance = balance >= 0 ? balance : throw new ArgumentException("Saldo gaboleh kurang dari 0");
+        Status = WalletStatusEnum.ACTIVE;
         UserId=userId;
+        CreatedAtUtc=DateTime.UtcNow;
+        UpdatedAtUtc=null;
     }
 
 
