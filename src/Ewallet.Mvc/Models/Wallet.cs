@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Ewallet.Mvc.Models;
@@ -33,6 +34,40 @@ public sealed class Wallet
         UserId=userId;
         CreatedAtUtc=DateTime.UtcNow;
         UpdatedAtUtc=null;
+    }
+
+    public void Credit (decimal amount)
+    {
+        if (Status != WalletStatusEnum.ACTIVE)
+        {
+            throw new InvalidOperationException("Wallet tidak aktif");
+        }
+        if(amount <= 0)
+        {
+            throw new InvalidOperationException("nominal harus lebih dari 0.");
+        }
+
+        Balance += amount;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void Debit (decimal amount)
+    {
+        if (Status != WalletStatusEnum.ACTIVE)
+        {
+            throw new InvalidOperationException("Wallet tidak aktif");
+        }
+        if(amount <= 0)
+        {
+            throw new InvalidOperationException("nominal harus lebih dari 0.");
+        }
+        if(Balance < amount)
+        {
+            throw new InvalidOperationException("saldo tidak cukup untuk transaksi");
+        }
+
+        Balance -= amount;
+        UpdatedAtUtc = DateTime.UtcNow;
     }
 
 

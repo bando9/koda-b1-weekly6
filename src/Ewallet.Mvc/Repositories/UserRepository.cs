@@ -5,7 +5,7 @@ using Ewallet.Mvc.Repositories;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ewallet.Mvc.Repository;
+namespace Ewallet.Mvc.Repositories;
 
 public sealed class UserRepository(AppDbContext db) : IUserRepository
 {

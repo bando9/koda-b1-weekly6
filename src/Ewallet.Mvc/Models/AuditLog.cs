@@ -16,6 +16,18 @@ public sealed class AuditLog
     public User? ActorUser {get; private set;}
     public long? TransactionId {get; private set;}
     public Transaction? Transaction {get; private set;}
+
+    public AuditLog(long id, string action, string entityType,string? entityId, OutcomeEnum outcome, string? description, string? correlationId, DateTime createdAtUtc)
+    {
+        Id=id;
+        Action=action;
+        EntityType=entityType;
+        EntityId=entityId;
+        Outcome=outcome;
+        Description=description;
+        CorrelationId=correlationId;
+        CreatedAtUtc=createdAtUtc;
+    }
 	
 
 }
@@ -26,3 +38,4 @@ public enum OutcomeEnum{
     REJECTED, 
     FAILED
 }
+

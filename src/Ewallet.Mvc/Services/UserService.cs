@@ -3,7 +3,7 @@ using Ewallet.Mvc.Data;
 using Ewallet.Mvc.DTOs;
 using Ewallet.Mvc.Models;
 using Ewallet.Mvc.Repositories;
-using Ewallet.Mvc.Repository;
+using Ewallet.Mvc.Repositories;
 using Microsoft.Data.SqlClient;
 
 namespace Ewallet.Mvc.Services;

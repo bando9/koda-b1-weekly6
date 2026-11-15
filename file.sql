@@ -123,4 +123,4 @@ Select * FROM dbo.WalletMutations;
 Select * FROM dbo.Transactions;
 Select * FROM dbo.PaymentMethods;
 Select * FROM dbo.Wallets;
-Select * FROM dbo.Users;
+Select * FROM dbo.Users; 

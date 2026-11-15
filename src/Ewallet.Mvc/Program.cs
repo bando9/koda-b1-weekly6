@@ -1,6 +1,6 @@
 using Ewallet.Mvc.Data;
 using Ewallet.Mvc.Repositories;
-using Ewallet.Mvc.Repository;
+using Ewallet.Mvc.Repositories;
 using Ewallet.Mvc.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;

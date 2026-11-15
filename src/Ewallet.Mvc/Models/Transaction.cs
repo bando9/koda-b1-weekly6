@@ -2,10 +2,12 @@ namespace Ewallet.Mvc.Models;
 
 public sealed class Transaction
 {
+    private Transaction() { }
+
     public long Id {get; private set;}
     public string ReferenceNo {get; private set;} = string.Empty;
     public TransactionTypeEnum Type {get; private set;}
-    public decimal Amount {get; private set;}
+    public decimal Amount {get; private set;} 
     public TransactionStatusEnum Status {get; private set;}
     public string? Description {get; private set;}
     public DateTime CreatedAtUtc {get; private set;}
@@ -23,7 +25,7 @@ public sealed class Transaction
     public TopUpRequest? TopUpRequest {get; private set;}
     public ICollection<WalletMutation> WalletMutations {get; private set;} = new List<WalletMutation>();
     public ICollection<AuditLog> AuditLogs {get; private set;} = new List<AuditLog>();
-
+ 
     public Transaction(long id, string referenceNo, TransactionTypeEnum type, decimal amount, TransactionStatusEnum status, string? description, DateTime createdAtUtc, DateTime? completedAtUtc, long? senderWalletId, long receiverWalletId)
     {
         Id = id;
@@ -36,6 +38,46 @@ public sealed class Transaction
         CompletedAtUtc = completedAtUtc;
         SenderWalletId = senderWalletId;
         ReceiverWalletId = receiverWalletId;
+    }
+
+
+    public static Transaction CreateTopUp (string referenceNo, long receiverWalletId, decimal amount, string? description, DateTime nowUtc)
+    {
+        if(amount <= 0) throw new ArgumentException("nominal harus lebih dari 0");
+
+        return new Transaction
+        {
+            ReferenceNo = referenceNo,
+            Type = TransactionTypeEnum.TOPUP,
+            SenderWalletId = null,
+            ReceiverWalletId = receiverWalletId,
+            Amount = amount,
+            Status = TransactionStatusEnum.PENDING,
+            Description = description,
+            CreatedAtUtc = nowUtc,
+            CompletedAtUtc = null
+        };
+    }
+
+    public void MarkSuccess(DateTime nowUtc)
+    {
+        EnsurePending();
+        Status = TransactionStatusEnum.SUCCESS;
+        CompletedAtUtc = nowUtc;
+    }
+
+    public void MarkFailed(DateTime nowUtc)
+    {
+        EnsurePending();
+        Status = TransactionStatusEnum.FAILED;
+        CompletedAtUtc = nowUtc;
+    }
+
+
+    private void EnsurePending()
+    {
+        if (Status != TransactionStatusEnum.PENDING)
+            throw new ArgumentException("Transaksi sudah diproses sebelumnya.");
     }
 
 }
