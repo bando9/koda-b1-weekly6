@@ -1,6 +1,5 @@
 using Ewallet.Mvc.Data;
 using Ewallet.Mvc.Repositories;
-using Ewallet.Mvc.Repositories;
 using Ewallet.Mvc.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -10,7 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSingleton(TimeProvider.System);
+
+// *Repository
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+builder.Services.AddScoped<ITopUpRepository, TopUpRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
+builder.Services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IWalletMutationRepository, WalletMutationRepository>();
+
+// *Service
+builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<ITopUpService, TopUpService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddOpenApi();

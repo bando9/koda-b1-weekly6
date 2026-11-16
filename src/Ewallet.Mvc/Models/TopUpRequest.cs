@@ -33,7 +33,7 @@ public sealed class TopUpRequest
     }
 
     public static TopUpRequest Create(
-        Transaction transaction,long walletId,long paymentMethodId,decimal amount,string? providerReference, DateTime nowUtc,DateTime expiresAtUtc
+        Transaction transaction,long walletId,int paymentMethodId,decimal amount,string? providerReference, DateTime nowUtc,DateTime expiresAtUtc
     ){
         if(amount <= 0) throw new ArgumentException("nominal harus lebih dari 0");
 

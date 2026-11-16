@@ -119,7 +119,7 @@ SET IDENTITY_INSERT dbo.AuditLogs OFF;
 
 Select * FROM dbo.AuditLogs;
 Select * FROM dbo.TopUpRequests;
-Select * FROM dbo.WalletMutations;
+Select * FROM dbo.WalletMutations; 
 Select * FROM dbo.Transactions;
 Select * FROM dbo.PaymentMethods;
 Select * FROM dbo.Wallets;

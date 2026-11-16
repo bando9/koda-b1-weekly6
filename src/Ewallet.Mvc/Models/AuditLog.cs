@@ -2,6 +2,8 @@ namespace Ewallet.Mvc.Models;
 
 public sealed class AuditLog
 {
+    private AuditLog() { } 
+
     public long Id {get; private set;}
     public string Action {get; private set;} = string.Empty;
     public string EntityType {get; private set;}= string.Empty;
@@ -28,6 +30,25 @@ public sealed class AuditLog
         CorrelationId=correlationId;
         CreatedAtUtc=createdAtUtc;
     }
+
+
+    public static AuditLog Create(
+        string action, string entityType, string? entityId,
+        OutcomeEnum outcome, string? description,
+        long? actorUserId, long? transactionId,
+        string? correlationId, DateTime nowUtc)
+        => new()
+        {
+            Action = action,
+            EntityType = entityType,
+            EntityId = entityId,
+            Outcome = outcome,
+            Description = description,
+            ActorUserId = actorUserId,
+            TransactionId = transactionId,
+            CorrelationId = correlationId,
+            CreatedAtUtc = nowUtc
+        };
 	
 
 }

@@ -2,7 +2,7 @@ namespace Ewallet.Mvc.Models;
 
 public sealed class PaymentMethod
 {
-    public long Id {get; private set;}
+    public int Id {get; private set;}
     public string Code {get; private set;} = string.Empty;
     public string Name {get; private set;}= string.Empty; 
     public string? ProviderName {get; private set;}
@@ -12,7 +12,7 @@ public sealed class PaymentMethod
     // constraint topup reques
     public ICollection<TopUpRequest> TopUpRequests {get; private set;} = new List<TopUpRequest>();
 
-    public PaymentMethod(long id, string code, string name, string? providerName, bool isActive, DateTime createdAtUtc)
+    public PaymentMethod(int id, string code, string name, string? providerName, bool isActive, DateTime createdAtUtc)
     {
         Id = id;
         Code=code;

@@ -1,8 +1,12 @@
 
 using System.Security.Cryptography;
+using Ewallet.Mvc.Data;
 using Ewallet.Mvc.DTOs;
 using Ewallet.Mvc.Models;
 using Ewallet.Mvc.Repositories;
+using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace Ewallet.Mvc.Services;
 
@@ -14,6 +18,7 @@ public interface ITopUpService
 }
 
 public sealed class TopUpService (
+    AppDbContext db,
     IWalletRepository walletRepository,
     IPaymentMethodRepository paymentMethodRepository,
     ITransactionRepository transactionRepository,
@@ -25,18 +30,74 @@ public sealed class TopUpService (
 ): ITopUpService
 {
     private static readonly TimeSpan RequestLifeTime = TimeSpan.FromHours(24);
-    public Task<TopUpResponse> ConfirmAsync(long topUpRequestId, CancellationToken ct)
+    
+    public async Task<TopUpResponse> ConfirmAsync(long topUpRequestId, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        await using var dbTx = await db.Database.BeginTransactionAsync(ct);
+
+        try
+        {
+            var topup = await topUpRepository.GetByIdAsync(topUpRequestId,ct) ?? throw new InvalidOperationException($"Topup dg id {topUpRequestId} tidak ditemukan");
+            
+            var transaction = topup.Transaction;
+            var wallet = topup.Wallet;
+
+            if(topup.Status != TopUpRequestStatusEnum.PENDING) throw new InvalidOperationException($"topup sudah berstatus {topup.Status}, tidak dapat diproses ulang");
+
+            if(transaction.Type != TransactionTypeEnum.TOPUP 
+                || transaction.Status != TransactionStatusEnum.PENDING
+                || transaction.ReceiverWalletId != topup.WalletId
+                || transaction.Amount != topup.Amount) 
+                throw new InvalidOperationException("data topup tidak konsisten dg transaksinya");
+
+            var now = time.GetUtcNow().UtcDateTime;
+
+            var balanceBefore = wallet.Balance;
+            wallet.Credit(topup.Amount);
+            topup.MarkPaid(now);
+            transaction.MarkSuccess(now);
+
+            await walletMutationRepository.AddAsync(WalletMutation.CreateIn(
+                transactionId: transaction.Id,
+                walletId: wallet.Id,
+                amount: topup.Amount,
+                balanceBefore: balanceBefore,
+                balanceAfter: wallet.Balance,
+                nowUtc: now), ct);
+
+            var correlationId = Activity.Current?.TraceId.ToString() 
+                    ?? Guid.NewGuid().ToString("N");
+
+            await auditLogRepository.AddAsync(AuditLog.Create(
+                action: "TOPUP_PAID", 
+                entityType: "Transaction",
+                entityId: transaction.Id.ToString(),
+                outcome: OutcomeEnum.SUCCESS,
+                description: "Pembayaran simulasi dikonfirmasi.",
+                actorUserId: wallet.UserId,
+                transactionId: transaction.Id,
+                correlationId: correlationId,
+                nowUtc: now), ct);
+
+            await db.SaveChangesAsync(ct);
+            await dbTx.CommitAsync(ct);
+
+            return Map(topup,transaction,topup.PaymentMethod.Code);            
+            
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new InvalidOperationException(
+                "Data wallet berubah saat diproses (konflik concurrency). Silakan coba lagi.");
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
+        {
+            throw new InvalidOperationException("Top up ini sedang atau sudah diproses.");
+        }
     }
 
     public async Task<TopUpResponse> CreateAsync(CreateTopUpRequest request, CancellationToken ct)
     {
-        // if(decimal.Round(request.Amount,2) != request.Amount)
-        // {
-        //     throw new InvalidOperationException("Nomimal maksimal 2 angka dibelakang koma");
-        // }
-
         var wallet = await walletRepository.GetByIdAsync(request.WalletId,ct) ?? throw new InvalidOperationException("wallet tidak ditemukan");
 
         WalletStatusEnum active = WalletStatusEnum.ACTIVE;
@@ -51,8 +112,7 @@ public sealed class TopUpService (
         var now = time.GetUtcNow().UtcDateTime;
 
         var transaction = Transaction.CreateTopUp(
-
-          referenceNo: GenerateNumberRange(12),
+          referenceNo: GenerateNumberRange(8),
           receiverWalletId: wallet.Id,
           amount: request.Amount,
           description: $"Top up via {method.Name}",
@@ -62,122 +122,59 @@ public sealed class TopUpService (
         var topUp = TopUpRequest.Create(
             transaction:transaction,
             walletId:wallet.Id,
-            paymentMethodId: method.Id,
+            paymentMethodId: method.Id, 
             amount: request.Amount,
-            providerReference: $"SIM-{method.Code}-{GenerateNumberRange(12)}"
+            providerReference: $"SIM-{method.Code}-{GenerateNumberRange(12)}",
             nowUtc:now,
             expiresAtUtc:now.Add(RequestLifeTime)
         );
 
+        await using var dbTx=await db.Database.BeginTransactionAsync(ct);
+        await topUpRepository.AddAsync(topUp,ct);
+        await db.SaveChangesAsync(ct);
 
+        await auditLogRepository.AddAsync(AuditLog.Create(
+            action: "TOPUP_REQUESTED",
+            entityType: "Transaction",
+            entityId: transaction.Id.ToString(),
+            outcome: OutcomeEnum.SUCCESS,
+            description: "Permintaan top up dibuat.",
+            actorUserId: wallet.UserId,
+            transactionId: transaction.Id,
+            correlationId: "tes correlationId",
+            nowUtc: now), ct);
+        
+        await db.SaveChangesAsync(ct);
+
+        await dbTx.CommitAsync(ct);
+
+        return Map(topUp,transaction,method.Code);
 
     }
 
-    public Task<TopUpResponse> GetByIdAsync(long topUpRequestId, CancellationToken ct)
+    public async Task<TopUpResponse> GetByIdAsync(long topUpRequestId, CancellationToken ct) => await topUpRepository.GetResponseByIdAsync(topUpRequestId, ct) ?? throw new ArgumentException($"topup dg id: {topUpRequestId} tidak ditemukan");
+
+    private static string GenerateNumberRange(int length)
     {
-        throw new NotImplementedException();
+        return string.Concat(Enumerable.Range(0, length)
+            .Select(_ => RandomNumberGenerator.GetInt32(0, length)));
     }
 
-    private static string GenerateNumberRange(int number)
-    {
-        return string.Concat(Enumerable.Range(0, 100)
-            .Select(_ => RandomNumberGenerator.GetInt32(0, number)));
-    }
+
+    private static TopUpResponse Map(TopUpRequest topUp, Transaction transaction, string paymentMethodCode)
+        => new()
+        {
+            TopUpRequestId = topUp.Id,
+            TransactionId = transaction.Id,
+            ReferenceNo = transaction.ReferenceNo,
+            WalletId = topUp.WalletId,
+            PaymentMethodCode = paymentMethodCode,
+            Amount = topUp.Amount,
+            Status = topUp.Status.ToString(),
+            TransactionStatus = transaction.Status.ToString(),
+            ProviderReference = topUp.ProviderReference,
+            CreatedAtUtc = topUp.CreatedAtUtc,
+            ExpiresAtUtc = topUp.ExpiresAtUtc,
+            PaidAtUtc = topUp.PaidAtUtc
+        };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// using System.Security.Cryptography;
-// using Ewallet.Mvc.Data;
-// using Ewallet.Mvc.DTOs;
-// using Ewallet.Mvc.Models;
-// using Ewallet.Mvc.Repositories;
-// using Microsoft.EntityFrameworkCore;
-
-// namespace Ewallet.Mvc.Services;
-
-// public sealed class TopUpService(AppDbContext db, IWalletRepository walletrepo,IPaymentMethodRepository paymentmethodrepo,ITopUpRepository topuprepo) : ITopUpService
-// {
-//     private readonly AppDbContext _db = db;
-//     private readonly IWalletRepository _walletrepo = walletrepo;
-//     private readonly IPaymentMethodRepository _paymentmethodrepo = paymentmethodrepo;
-//     private readonly ITopUpRepository _topuprepo = topuprepo;
-//     public Task<TopUpResponse> ConfirmAsync(long TopUpRequestId, CancellationToken ct)
-//     {
-//         throw new NotImplementedException();
-//     }
-
-//     // public async Task<TopUpResponse> CreateAsync(CreateTopUpRequest request, CancellationToken ct)
-//     // {
-//     //     if(request.Amount < 0)
-//     //     {
-//     //         throw new InvalidOperationException("Maaf angka nominal topup tidak boleh kurang dari 0");
-//     //     }
-
-//     //     var existingWallet = await _walletrepo.GetByIdAsync(request.WalletId, ct);
-//     //     var frozenWallet = WalletStatusEnum.FROZEN;
-//     //     var closedWallet = WalletStatusEnum.CLOSED;
-
-//     //     if(existingWallet is null || existingWallet.Status == frozenWallet || existingWallet.Status == closedWallet)
-//     //     {
-//     //         throw new InvalidOperationException("Maaf wallet tidak bisa digunakan atau tidak aktif.");
-//     //     }
-
-//     //     var existingPaymentMethod = await _paymentmethodrepo.GetByIdAsync(request.PaymentMethodId, ct);
-
-//     //     if (!existingPaymentMethod.IsActive)
-//     //     {
-//     //         throw new InvalidOperationException("maaf metode payment sudah tidak aktif");
-//     //     }
-
-
-//     //     Transaction transaction = new(
-//     //         0,
-//     //         $"Ref-{GenerateNumberRange(8)}",
-//     //         TransactionTypeEnum.TOPUP,
-//     //         request.Amount,
-//     //         TransactionStatusEnum.PENDING,
-//     //         "tes descfrom topupservice",
-//     //         DateTime.UtcNow,
-//     //         null,
-//     //         null,
-//     //         request.WalletId
-//     //     );
-
-//     //     var topUpStatusPending = TopUpRequestStatusEnum.PENDING;
-//     //     TopUpRequest topUpReq = new(
-//     //         0,
-//     //         request.Amount,
-//     //         topUpStatusPending,
-//     //         null,
-//     //         DateTime.UtcNow,
-//     //         null,
-//     //         null
-//     //     );
-
-//     //     // AuditLog auditLog = new(0,"")
-
-//     //     AuditLog auditLog = new(0,"TOPUP_REQUESTED","Transaction",$"{transaction.Id}",OutcomeEnum.SUCCESS,"tes from topup service",null,DateTime.UtcNow);
-
-//     //     await _topuprepo.AddRequestAsync(request,auditLog,ct);
-
-//     // }
-
-
-//     private static string GenerateNumberRange(int number)
-//     {
-//         return string.Concat(Enumerable.Range(0, 100)
-//             .Select(_ => RandomNumberGenerator.GetInt32(0, number)));
-//     }
-
-// }

@@ -8,7 +8,4 @@ public interface ITopUpRepository
     Task AddAsync(TopUpRequest request, CancellationToken ct);
     Task<TopUpRequest?> GetByIdAsync(long id,CancellationToken ct);
     Task<TopUpResponse?> GetResponseByIdAsync(long id, CancellationToken ct);
-
-    // Task AddRequestAsync(TopUpRequest request, AuditLog auditLog, CancellationToken ct);
-    // Task<TopUpRequest> GetDetailByIAsync(long id,CancellationToken ct);
 } 

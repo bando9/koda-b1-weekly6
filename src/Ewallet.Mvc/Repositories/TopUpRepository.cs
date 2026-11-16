@@ -11,13 +11,13 @@ public sealed class TopUpRepository(AppDbContext db) : ITopUpRepository
 
     public async Task AddAsync(TopUpRequest request, CancellationToken ct) => await _db.TopUpRequests.AddAsync(request, ct);
 
-    public Task<TopUpRequest?> GetByIdAsync(long id, CancellationToken ct) => _db.TopUpRequests.Include(t=>t.Transaction).Include(t=>t.Wallet).Include(t=>t.PaymentMethod).FirstOrDefaultAsync(t=>t.PaymentMethodId == id,ct);
+    public Task<TopUpRequest?> GetByIdAsync(long id, CancellationToken ct) => _db.TopUpRequests.Include(t=>t.Transaction).Include(t=>t.Wallet).Include(t=>t.PaymentMethod).FirstOrDefaultAsync(t=>t.Id == id,ct);
 
     public async Task<TopUpResponse?> GetResponseByIdAsync(long id, CancellationToken ct)
     {
         var row = await _db.TopUpRequests
             .AsNoTracking()
-            .Where(t=>t.Id == id)
+            .Where(t=>t.Id == id) 
             .Select(t => new
             {
                 t.Id,
