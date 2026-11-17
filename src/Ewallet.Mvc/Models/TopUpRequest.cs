@@ -1,5 +1,14 @@
 namespace Ewallet.Mvc.Models;
 
+
+public enum TopUpRequestStatusEnum{
+    PENDING, 
+    PAID, 
+    FAILED, 
+    EXPIRED
+}
+
+
 public sealed class TopUpRequest
 {
     private TopUpRequest() { } 
@@ -30,6 +39,23 @@ public sealed class TopUpRequest
         CreatedAtUtc=createdAtUtc;
         ExpiresAtUtc=expiresAtUtc;
         PaidAtUtc=paidAtUtc;
+    }
+
+    public TopUpRequest(
+        long id, long transactionId, long walletId, int paymentMethodId,
+        decimal amount, TopUpRequestStatusEnum status, string? providerReference,
+        DateTime createdAtUtc, DateTime? expiresAtUtc, DateTime? paidAtUtc)
+    {
+        Id = id;
+        TransactionId = transactionId;
+        WalletId = walletId;
+        PaymentMethodId = paymentMethodId;
+        Amount = amount;
+        Status = status;
+        ProviderReference = providerReference;
+        CreatedAtUtc = createdAtUtc;
+        ExpiresAtUtc = expiresAtUtc;
+        PaidAtUtc = paidAtUtc;
     }
 
     public static TopUpRequest Create(
@@ -72,11 +98,4 @@ public sealed class TopUpRequest
         if (Status != TopUpRequestStatusEnum.PENDING)
             throw new ArgumentException($"Topup sudah berstatus {Status} dan tidak dapat diproses ulang.");
     }
-}
-
-public enum TopUpRequestStatusEnum{
-    PENDING, 
-    PAID, 
-    FAILED, 
-    EXPIRED
 }

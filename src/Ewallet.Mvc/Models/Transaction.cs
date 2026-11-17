@@ -1,5 +1,20 @@
 namespace Ewallet.Mvc.Models;
 
+
+
+public enum TransactionTypeEnum {
+    TOPUP, 
+    TRANSFER
+}
+
+public enum TransactionStatusEnum {
+    PENDING, 
+    SUCCESS, 
+    FAILED
+}
+
+
+
 public sealed class Transaction
 {
     private Transaction() { }
@@ -104,15 +119,4 @@ public sealed class Transaction
             throw new ArgumentException("Transaksi sudah diproses sebelumnya.");
     }
 
-}
-
-public enum TransactionTypeEnum {
-    TOPUP, 
-    TRANSFER
-}
-
-public enum TransactionStatusEnum {
-    PENDING, 
-    SUCCESS, 
-    FAILED
 }

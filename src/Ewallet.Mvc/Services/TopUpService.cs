@@ -53,7 +53,7 @@ public sealed class TopUpService (
             var now = time.GetUtcNow().UtcDateTime;
 
             var balanceBefore = wallet.Balance;
-            wallet.Credit(topup.Amount);
+            wallet.Credit(topup.Amount, now);
             topup.MarkPaid(now);
             transaction.MarkSuccess(now);
 

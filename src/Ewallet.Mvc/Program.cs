@@ -1,4 +1,5 @@
 using Ewallet.Mvc.Data;
+using Ewallet.Mvc.Data.Seeders;
 using Ewallet.Mvc.Repositories;
 using Ewallet.Mvc.Services;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,19 @@ var connectionString = builder.Configuration.GetConnectionString("newEwallet")
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    options.UseSqlServer(connectionString)
+        .UseSeeding((context, _) =>
+        {
+            PaymentMethodSeedData.Seed(context);
+            UserWalletSeedData.Seed(context);
+            TransactionSeedData.Seed(context);
+        })
+        .UseAsyncSeeding(async (context, _, ct) =>
+        {
+            await PaymentMethodSeedData.SeedAsync(context, ct);
+            await UserWalletSeedData.SeedAsync(context, ct);
+            await TransactionSeedData.SeedAsync(context, ct);
+        });
 });
 
 var app = builder.Build();

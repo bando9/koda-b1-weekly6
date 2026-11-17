@@ -1,5 +1,12 @@
 namespace Ewallet.Mvc.Models;
 
+public enum OutcomeEnum{
+    SUCCESS, 
+    REJECTED, 
+    FAILED
+}
+
+
 public sealed class AuditLog
 {
     private AuditLog() { } 
@@ -31,6 +38,23 @@ public sealed class AuditLog
         CreatedAtUtc=createdAtUtc;
     }
 
+    public AuditLog(
+        long id, string action, string entityType, string? entityId,
+        OutcomeEnum outcome, string? description, string? correlationId,
+        DateTime createdAtUtc, long? actorUserId = null, long? transactionId = null)
+    {
+        Id = id;
+        Action = action;
+        EntityType = entityType;
+        EntityId = entityId;
+        Outcome = outcome;
+        Description = description;
+        CorrelationId = correlationId;
+        CreatedAtUtc = createdAtUtc;
+        ActorUserId = actorUserId;
+        TransactionId = transactionId;
+    }
+
 
     public static AuditLog Create(
         string action, string entityType, string? entityId,
@@ -54,9 +78,5 @@ public sealed class AuditLog
 }
 
 
-public enum OutcomeEnum{
-    SUCCESS, 
-    REJECTED, 
-    FAILED
-}
+
 

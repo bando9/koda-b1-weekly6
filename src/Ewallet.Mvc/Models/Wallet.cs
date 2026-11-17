@@ -3,6 +3,15 @@ using System.Text.Json.Serialization;
 
 namespace Ewallet.Mvc.Models;
 
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+
+public enum WalletStatusEnum {
+    ACTIVE, 
+    FROZEN, 
+    CLOSED
+}
+
 public sealed class Wallet
 {
     private Wallet() { }
@@ -36,7 +45,7 @@ public sealed class Wallet
         UpdatedAtUtc=null;
     }
 
-    public void Credit (decimal amount)
+    public void Credit (decimal amount,DateTime nowUtc)
     {
         if (Status != WalletStatusEnum.ACTIVE)
         {
@@ -48,10 +57,10 @@ public sealed class Wallet
         }
 
         Balance += amount;
-        UpdatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = nowUtc;
     }
 
-    public void Debit (decimal amount)
+    public void Debit (decimal amount,DateTime nowUtc)
     {
         if (Status != WalletStatusEnum.ACTIVE)
         {
@@ -67,17 +76,10 @@ public sealed class Wallet
         }
 
         Balance -= amount;
-        UpdatedAtUtc = DateTime.UtcNow;
+        UpdatedAtUtc = nowUtc;
     }
 
 
 
 }
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
-
-public enum WalletStatusEnum {
-    ACTIVE, 
-    FROZEN, 
-    CLOSED
-}
