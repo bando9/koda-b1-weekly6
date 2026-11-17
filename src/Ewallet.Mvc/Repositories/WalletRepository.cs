@@ -17,6 +17,8 @@ public sealed class WalletRepository(AppDbContext db) : IWalletRepository
         return wallet is null ? null : WalletResponse.FromModel(wallet);
     }
 
+    public async Task<Wallet?> GetWalletByIdAsync(long id, CancellationToken ct) => await _db.Wallets.FirstOrDefaultAsync(w=>w.Id == id, ct);
+
     public Task<Wallet?> GetByWalletNumberAsync(string walletNumber, CancellationToken ct) => _db.Wallets.FirstOrDefaultAsync(w=>w.WalletNumber == walletNumber,ct);
 
     public Task<bool> ExistAsync(long id, CancellationToken ct) => _db.Wallets.AsNoTracking().AnyAsync(w=>w.Id == id, ct);

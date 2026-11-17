@@ -35,6 +35,47 @@ public sealed class WalletMutation
             CreatedAtUtc=nowUtc
         };
     }
+
+    public static WalletMutation CreateIn(
+        Transaction transaction, long walletId, decimal amount,
+        decimal balanceBefore, decimal balanceAfter, DateTime nowUtc)
+    {
+        if (balanceAfter != balanceBefore + amount)
+            throw new ArgumentException("Mutasi tidak konsisten dengan saldo.");
+
+        return new WalletMutation
+        {
+            Transaction = transaction,
+            WalletId = walletId,
+            Direction = DirectionEnum.IN,
+            Amount = amount,
+            BalanceBefore = balanceBefore,
+            BalanceAfter = balanceAfter,
+            CreatedAtUtc = nowUtc
+        };
+    }
+
+
+
+    public static WalletMutation CreateOut(
+        Transaction transaction, long walletId, decimal amount,
+        decimal balanceBefore, decimal balanceAfter, DateTime nowUtc)
+    {
+        if (balanceAfter != balanceBefore - amount)
+            throw new ArgumentException("Mutasi tidak konsisten dengan saldo.");
+
+        return new WalletMutation
+        {
+            Transaction = transaction,
+            WalletId = walletId,
+            Direction = DirectionEnum.OUT,
+            Amount = amount,
+            BalanceBefore = balanceBefore,
+            BalanceAfter = balanceAfter,
+            CreatedAtUtc = nowUtc
+        };
+    }
+
 }
 
 public enum DirectionEnum {

@@ -59,6 +59,30 @@ public sealed class Transaction
         };
     }
 
+    public static Transaction CreateTransfer(
+        string referenceNo, long senderWalletId, long receiverWalletId,
+        decimal amount, string? description, DateTime nowUtc)
+    {
+        if (amount <= 0)
+            throw new ArgumentException("Nominal harus lebih dari 0.");
+        if (senderWalletId == receiverWalletId)
+            throw new ArgumentException("Wallet pengirim dan penerima tidak boleh sama.");
+
+        return new Transaction
+        {
+            ReferenceNo = referenceNo,
+            Type = TransactionTypeEnum.TRANSFER,
+            SenderWalletId = senderWalletId,
+            ReceiverWalletId = receiverWalletId,
+            Amount = amount,
+            Status = TransactionStatusEnum.SUCCESS,
+            Description = description,
+            CreatedAtUtc = nowUtc,
+            CompletedAtUtc = nowUtc
+        };
+    }
+
+
     public void MarkSuccess(DateTime nowUtc)
     {
         EnsurePending();
