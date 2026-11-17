@@ -2,21 +2,21 @@
 
 ## API Endpoints
 
-Base URL: `/api`
+Base URL: `/api/v1`
 
 ### Users
 
-| Endpoint Path                  | HTTP Method | Description                        | Available |
-| ------------------------------ | ----------- | ---------------------------------- | --------- |
-| `/api/users`                   | GET         | Get all users                      |           |
-| `/api/users/{id}`              | GET         | Get user detail by ID              |           |
-| `/api/users`                   | POST        | Create user and initialize wallet  |           |
-| `/api/users/{id}`              | PUT         | Update user profile                |           |
-| `/api/users/{id}`              | DELETE      | Delete user by ID                  |           |
-| `/api/wallets/{userId}`        | GET         | Get wallet information by User ID  |           |
-| `/api/wallets/{userId}/topups` | POST        | Top up wallet balance              |           |
-| `/api/transfers`               | POST        | Transfer balance to another wallet |           |
-| `/api/users/{id}/transactions` | GET         | Get user transaction history       |           |
+| Endpoint Path                            | HTTP Method | Description                         | Available |
+| ---------------------------------------- | ----------- | ----------------------------------- | --------- |
+| `/api/v1/users`                          | GET         | Get all users                       | ✅        |
+| `/api/v1/users/{id}`                     | GET         | Get user+wallet detail by user ID   | ✅        |
+| `/api/v1/users`                          | POST        | Create user and initialize wallet   | ✅        |
+| `/api/v1/users/{id}`                     | PUT         | Update user profile                 |           |
+| `/api/v1/users/{id}`                     | DELETE      | Delete user by ID                   |           |
+| `/api/v1/topup/`                         | POST        | Top up wallet by wallet ID (body)   | ✅        |
+| `/api/v1/topup/{topuprequestId}/confirm` | POST        | Confirm top up by top up request ID | ✅        |
+| `/api/v1/transfers`                      | POST        | Transfer balance to another wallet  |           |
+| `/api/v1/users/{id}/transactions`        | GET         | Get user transaction history        |           |
 
 ## Getting Started
 

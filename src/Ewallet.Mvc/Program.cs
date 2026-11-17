@@ -24,6 +24,7 @@ builder.Services.AddScoped<IWalletMutationRepository, WalletMutationRepository>(
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<ITopUpService, TopUpService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IHistoryService, HistoryService>();
 
 builder.Services.AddOpenApi();
 
