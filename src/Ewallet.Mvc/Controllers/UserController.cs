@@ -7,10 +7,15 @@ namespace Ewallet.Mvc.Controllers;
 [ApiController]
 [Route("api/v1/users")]
 
-public sealed class UserController(IUserService service) : ControllerBase
+public sealed class UserController(
+    IUserService service, 
+    IHistoryService historyService
+) : ControllerBase
 {
     private readonly IUserService _service = service;
+    private readonly IHistoryService _historyservice = historyService;
 
+    // *Get All Users
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status404NotFound)]
@@ -20,24 +25,17 @@ public sealed class UserController(IUserService service) : ControllerBase
         return Ok(users);
     }
     
+    // *Get user by id
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IReadOnlyList<UserResponse>), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetById(long id, CancellationToken ct)
-    {
-        var user = await _service.GetByIdAsync(id,ct);
-        return user is null ? Problem(statusCode: StatusCodes.Status404NotFound, title: "User not found") : Ok(user);
-    }
-
-    [HttpGet("{id}/detail")]
     [ProducesResponseType(typeof(IReadOnlyList<UserDetailResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IReadOnlyList<UserDetailResponse>), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyList<UserDetailResponse>>> GetDetailById(long id, CancellationToken ct)
+    public async Task<ActionResult<IReadOnlyList<UserDetailResponse>>> GetById(long id, CancellationToken ct)
     {
         var user = await _service.GetDetailByIdAsync(id,ct);
         return user is null ? Problem(statusCode: StatusCodes.Status404NotFound, title: "User not found") : Ok(user);
     }
 
+    // *Create user with wallet
     [HttpPost]
     [ProducesResponseType(typeof(WalletResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
@@ -74,4 +72,23 @@ public sealed class UserController(IUserService service) : ControllerBase
     }
 
 
+
+    [HttpGet("{walletId:long}/transactions")]
+    [ProducesResponseType(typeof(PagedResult<MutationResponse>), StatusCodes.Status200OK)] 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMutations(
+        long walletId, [FromQuery] MutationQuery query, CancellationToken ct
+    )
+        {
+            try
+        {
+            var result = await _historyservice.GetMutationsAsync(walletId, query, ct);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
 }
