@@ -73,17 +73,17 @@ public sealed class UserController(
 
 
 
-    [HttpGet("{walletId:long}/transactions")]
+    [HttpGet("{userId:long}/transactions")]
     [ProducesResponseType(typeof(PagedResult<MutationResponse>), StatusCodes.Status200OK)] 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMutations(
-        long walletId, [FromQuery] MutationQuery query, CancellationToken ct
+        long userId, [FromQuery] MutationQuery query, CancellationToken ct
     )
         {
             try
         {
-            var result = await _historyservice.GetMutationsAsync(walletId, query, ct);
+            var result = await _historyservice.GetMutationsAsync(userId, query, ct);
             return Ok(result);
         }
         catch (KeyNotFoundException ex)

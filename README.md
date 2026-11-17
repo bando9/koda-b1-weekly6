@@ -16,7 +16,7 @@ Base URL: `/api/v1`
 | `/api/v1/topup/`                         | POST        | Top up wallet by wallet ID (body)   | ✅        |
 | `/api/v1/topup/{topuprequestId}/confirm` | POST        | Confirm top up by top up request ID | ✅        |
 | `/api/v1/transfers`                      | POST        | Transfer balance to another wallet  |           |
-| `/api/v1/users/{id}/transactions`        | GET         | Get user transaction history        |           |
+| `/api/v1/users/{userId}/transactions`    | GET         | Get user transaction history        | ✅        |
 
 ## Getting Started
 

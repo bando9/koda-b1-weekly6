@@ -12,4 +12,7 @@ public interface IWalletRepository
 
     Task<bool> ExistAsync(long id,CancellationToken ct);
 
+    Task<Wallet?> GetByUserId (long userId, CancellationToken ct);
+
+
 }

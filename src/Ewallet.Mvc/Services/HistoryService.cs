@@ -13,11 +13,10 @@ public sealed class HistoryService(
     IWalletMutationRepository walletMutationRepository
 ) : IHistoryService
 {
-    public async Task<PagedResult<MutationResponse>?> GetMutationsAsync(long walletId, MutationQuery query, CancellationToken ct)
+    public async Task<PagedResult<MutationResponse>?> GetMutationsAsync(long userId, MutationQuery query, CancellationToken ct)
     {
-        if(!await walletRepository.ExistAsync(walletId,ct)) 
-            throw new KeyNotFoundException($"Wallet dengan id {walletId} tidak ditemukan");
+        var wallet = await walletRepository.GetByUserId(userId,ct) ?? throw new KeyNotFoundException($"Wallet dengan id {userId} tidak ditemukan");
 
-        return await walletMutationRepository.GetHistoryAsync(walletId,query,ct); 
+        return await walletMutationRepository.GetHistoryAsync(wallet.Id,query,ct); 
     }
 }
