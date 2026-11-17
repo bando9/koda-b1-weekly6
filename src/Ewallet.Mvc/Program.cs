@@ -1,5 +1,6 @@
 using Ewallet.Mvc.Data;
 using Ewallet.Mvc.Data.Seeders;
+using Ewallet.Mvc.Middlewares;
 using Ewallet.Mvc.Repositories;
 using Ewallet.Mvc.Services;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,9 @@ builder.Services.AddScoped<ITransferService, TransferService>();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var connectionString = builder.Configuration.GetConnectionString("newEwallet") 
     ?? throw new InvalidOperationException("ga bisa koneksi, belum konfigurasi");
 
@@ -51,6 +55,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
