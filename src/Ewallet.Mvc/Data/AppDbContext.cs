@@ -138,8 +138,7 @@ public sealed class AppDbContext : DbContext
                 table.HasCheckConstraint("CK_WalletMutations_Amount", "[Amount] > 0");
                 table.HasCheckConstraint("CK_WalletMutations_BalanceConsistency",
                 "([Direction] = 'IN'  AND [BalanceAfter] = [BalanceBefore] + [Amount]) " +
-                "OR ([Direction] = 'OUT' AND [BalanceAfter] = [BalanceBefore] - [Amount])");               
-                
+                "OR ([Direction] = 'OUT' AND [BalanceAfter] = [BalanceBefore] - [Amount])");
             });
             entity.HasKey(wm=>wm.Id);
             entity.Property(wm=>wm.Id).UseIdentityColumn();

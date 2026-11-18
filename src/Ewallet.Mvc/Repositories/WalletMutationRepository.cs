@@ -28,7 +28,6 @@ public sealed class WalletMutationRepository(AppDbContext db) : IWalletMutationR
         {
             var search = query.Search.Trim();
             q = q.Where(m => m.Transaction.ReferenceNo.Contains(search));
-
         }
 
         if (query.Direction.HasValue)
@@ -67,7 +66,7 @@ public sealed class WalletMutationRepository(AppDbContext db) : IWalletMutationR
                     : ordered.ThenBy(m=>m.Id);
 
         var rows = await ordered
-                    .Skip((query.Page - 1)*query.PageSize)
+                    .Skip((query.Page - 1) * query.PageSize)
                     .Take(query.PageSize)
                     .Select(m=> new
                     {

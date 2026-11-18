@@ -25,6 +25,7 @@ public sealed class TransferService(
 ) : ITransferService
 {
     private readonly AppDbContext _db=db;
+    
     private sealed class Attempt
     {
         public long? ActoreUserId {get; set;}

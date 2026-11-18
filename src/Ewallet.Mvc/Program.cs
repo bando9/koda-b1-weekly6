@@ -21,6 +21,7 @@ builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 builder.Services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IWalletMutationRepository, WalletMutationRepository>();
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
 // *Service
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
@@ -28,6 +29,7 @@ builder.Services.AddScoped<ITopUpService, TopUpService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHistoryService, HistoryService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 builder.Services.AddOpenApi();
 

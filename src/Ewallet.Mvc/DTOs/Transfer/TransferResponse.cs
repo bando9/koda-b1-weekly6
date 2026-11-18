@@ -12,8 +12,4 @@ public sealed class TransferResponse
     public string? Description {get;init;}
     public decimal SenderBalanceAfter {get;init;} 
     public DateTime CompletedAtUtc {get;init;} 
-
-    
-
-
 }
