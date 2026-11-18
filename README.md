@@ -2,6 +2,22 @@
 
 Aplikasi manajemen dompet digital (_E-Wallet_) berbasis ASP.NET Core dan Entity Framework Core dengan SQL Server. Sistem ini mendukung registrasi pengguna, pengelolaan dompet beserta proteksi _optimistic concurrency_ (`RowVersion`), _top-up_ melalui berbagai metode pembayaran, transfer antar-pengguna, pencatatan mutasi saldo (`IN`/`OUT`), serta _audit logging_.
 
+## Perbedaan Transactions, WalletMutations, dan AuditLogs
+
+- **Transactions**: Menyimpan niat dan status dari sebuah peristiwa finansial (misal: Top up / Transfer), siapa yg mengirim / menerima, nominalnya, dan status transaksi (PENDING, SUCCESS, FAILED). 1 kali transfer menghasilkan 1 baris transaksi.
+
+- **Wallet Mutation**: Mencatat dampak riil perubahan uang pada saldo setiap wallet secara jelas (IN / OUT), lengkap dg BalanceBefore dan BalanceAfter. Hanya dibuat jika transaksi SUCCESS. 1 kali transfer sukses menghasilkan 2 baris mutasi (OUT di pengirim, IN di penerima) untuk menjamin akurasi audit keuangan (_reconciliation_).
+
+- **AuditLogs**: Mencatat seluruh kejadian teknis maupun percobaan aksi di sistem, termasuk aksi non-finansial (misal ubah status wallet) maupun percobaan transaksi yg ditolak (REJECTED) atau gagal (FAILED), lengkap siap aktornya (ActorUserId) dan CorrelationId untuk kebutuhan debugging dan keamanan.
+
+## Alasan Penggunaan `AsNoTracking`, Database Transaction dan `RowVersion`
+
+- `AsNoTracking()` digunakan pada query yg hanya membaca data (misal menampilkan data transaksi, riwayat mutasi, atau detail profil), dimana endpoint tersebut tidak membutuhkan pengubahan data (CUD), sehingga penggunaan memory jauh lebih hemat dan eksekusi query lebih cepat.
+
+- Database Transaction (`BeginTransactionAsync`) digunakan ketika transaksi melibatkan banyak langkah sekaligus. Misal transfer, melibatkan pengurangan saldo, menambah saldo, mengubah status transaksi, membuat 2 mutasi saldo, dan mencatat log. Dg membungkusnya dalam database transaction, semua proses bersifat _all-or-nothing_, jika satu langkah gagal, seluruh perubahan di-_rollback_ sehingga tidak akan pernah terjadi kasus saldo pengirim terpotong tetapi saldo penerima tidak bertambah.
+
+- `RowVersion` berfungsi sbg penanda versi baris data di table Wallets yg otomatis berubah setiap kali baris tersebut di-update oleh SQL Server. Jika 2 transaksi mencoba memotong saldo wallet di waktu yg sama, transaksi pertama berhasil memperbarui `RowVersion`, sementara transaksi kedua akan otomatis digagalkan oleh EF Core(DbUpdateCurrencyException) karena RowVersion yang dibawa sudah usang/kadaluarsa, sehingga saldo tidak akan pernah minus / salah hitung.
+
 ## Technologies
 
 - **Framework:** .NET 10 / ASP.NET Core (Web API)
@@ -45,7 +61,7 @@ Aplikasi manajemen dompet digital (_E-Wallet_) berbasis ASP.NET Core dan Entity 
    dotnet restore
    dotnet run
    ```
-   Aplikasi akan berjalan pada alamat yang tertera di terminal (misalnya `http://localhost:5000` atau `https://localhost:7001`).
+   Aplikasi akan berjalan pada alamat yang tertera di terminal (misalnya `http://localhost:5000`).
 
 ## Database Migration
 
