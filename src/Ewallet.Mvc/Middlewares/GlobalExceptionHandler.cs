@@ -83,14 +83,6 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
                 "Bad Request",
                 exception.Message
             ),
-
-            
-            UnauthorizedAccessException => (
-                StatusCodes.Status401Unauthorized,
-                "Unauthorized",
-                "Anda tidak memiliki akses untuk melakukan aksi ini."
-            ),
-
             
             KeyNotFoundException => (
                 StatusCodes.Status404NotFound,

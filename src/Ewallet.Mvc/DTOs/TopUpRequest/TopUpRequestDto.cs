@@ -9,7 +9,7 @@ public sealed record CreateTopUpRequest
     [Required(ErrorMessage = "Payment Method Id wajib diisi.")]
     long PaymentMethodId,
     [Required(ErrorMessage = "Nonimal topup wajib diisi.")]
-    [Range(typeof(decimal),"1", "1000000000000", ErrorMessage = "Angka minimal 1.")]
+    [Range(typeof(decimal),"1", "1000000000000", ErrorMessage = "Angka minimal Rp.1, dan maksimal Rp.1T.")]
     decimal Amount
 );
 
@@ -29,18 +29,3 @@ public sealed class TopUpResponse
     public DateTime? ExpiresAtUtc { get; init; }
     public DateTime? PaidAtUtc { get; init; }
 }
-
-// public sealed record TopUpResponse(
-//     long TopUpRequestId,
-//     long TransactionId,
-//     string ReferenceNo,
-//     long WalletId,
-//     string PaymentMethodCode,
-//     decimal Amount,
-//     string Status,
-//     string TransactionStatus,
-//     string? ProviderReference,
-//     DateTime CreatedAtUtc,
-//     DateTime? ExpiredAtUtc,
-//     DateTime? PaidAtUtc
-// );

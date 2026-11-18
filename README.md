@@ -24,6 +24,7 @@ Aplikasi manajemen dompet digital (_E-Wallet_) berbasis ASP.NET Core dan Entity 
 - **ORM:** Entity Framework Core (Code-First)
 - **Database:** Microsoft SQL Server
 - **Error Handling:** Global Exception Handler
+- **Scalar** OpenAPI
 
 ## Getting Started
 

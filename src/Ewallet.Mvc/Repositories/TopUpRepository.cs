@@ -52,14 +52,4 @@ public sealed class TopUpRepository(AppDbContext db) : ITopUpRepository
                 PaidAtUtc = row.PaidAtUtc
             };
     }
-
-    // public Task AddAsync(TopUpRequest request, CancellationToken ct)
-    // {
-
-    // }
-
-    // public Task<TopUpRequest> GetByIdAsync(long id, CancellationToken ct)
-    // {
-    //     throw new NotImplementedException();
-    // }
 }

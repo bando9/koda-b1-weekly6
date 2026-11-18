@@ -20,7 +20,7 @@ public sealed class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Users
+        // *Users
         modelBuilder.Entity<User>(entity =>
         {
             entity.ToTable("Users", "dbo", table =>
@@ -51,7 +51,7 @@ public sealed class AppDbContext : DbContext
 
         });
     
-        // Wallets
+        // *Wallets
         modelBuilder.Entity<Wallet>(entity =>
         {
             entity.ToTable("Wallets", "dbo", table =>
@@ -80,7 +80,7 @@ public sealed class AppDbContext : DbContext
             entity.HasIndex(w=>w.UserId).IsUnique();
         });
 
-        // Transaction
+        // *Transaction
         modelBuilder.Entity<Transaction>(entity =>
         {
             entity.ToTable("Transactions", "dbo", table =>
@@ -129,7 +129,7 @@ public sealed class AppDbContext : DbContext
 
         });
 
-        // Wallet Mutations
+        // *Wallet Mutations
         modelBuilder.Entity<WalletMutation>(entity =>
         {
             entity.ToTable("WalletMutations", "dbo", table =>
@@ -158,7 +158,7 @@ public sealed class AppDbContext : DbContext
             entity.HasIndex(wm=>new{wm.WalletId, wm.CreatedAtUtc,wm.Id}).IsDescending(false,true,true);
         });
 
-        // PaymentMethods
+        // *PaymentMethods
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
             entity.ToTable("PaymentMethods", "dbo");
@@ -175,7 +175,7 @@ public sealed class AppDbContext : DbContext
             entity.Property(pm=>pm.CreatedAtUtc).HasColumnType("datetime2").HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
         });
 
-        // TopUpRequests
+        // *TopUpRequests
         modelBuilder.Entity<TopUpRequest>(entity =>
         {
             entity.ToTable("TopUpRequests","dbo", table =>
@@ -200,7 +200,7 @@ public sealed class AppDbContext : DbContext
 
         });
 
-        // AuditLogs
+        // *AuditLogs
         modelBuilder.Entity<AuditLog>(entity =>
         {
             entity.ToTable("AuditLogs", "dbo",table =>

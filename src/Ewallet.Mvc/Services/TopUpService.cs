@@ -21,7 +21,6 @@ public sealed class TopUpService (
     AppDbContext db,
     IWalletRepository walletRepository,
     IPaymentMethodRepository paymentMethodRepository,
-    ITransactionRepository transactionRepository,
     ITopUpRepository topUpRepository,
     IWalletMutationRepository walletMutationRepository,
     IAuditLogRepository auditLogRepository,
