@@ -2,19 +2,51 @@ using Ewallet.Mvc.Models;
 
 namespace Ewallet.Mvc.DTOs;
 
-public sealed class AuditLogResponse
-{
-    public long Id {get; private set;}
-    public string Action {get; private set;} = string.Empty;
-    public string EntityType {get; private set;}= string.Empty;
-    public string? EntityId {get; private set;}
-    public OutcomeEnum Outcome {get; private set;}
-    public string? Description {get; private set;}
-    public string? CorrelationId {get; private set;}
-    public DateTime CreatedAtUtc {get; private set;}
-    public long? ActorUserId {get; private set;}
-    public User? ActorUser {get; private set;}
-    public long? TransactionId {get; private set;}
-    public Transaction? Transaction {get; private set;}
-} 
+
+public sealed record AuditLogItemResponse  (
+    long Id,
+    string Action,
+    string EntityType,
+    string? EntityId,
+    string Outcome,
+    string? Description,
+    string? CorrelationId,
+    long? ActorUserId,
+    long? TransitionId,
+    DateTime CreatedAtUtc
+);
+
+
+public sealed record PagedResultLogs<T>(
+    long Page, long PageSize, long TotalCount,
+    long TotalPages, IReadOnlyList<T> Items
+);
+
+
+// public sealed record AuditLogResponse(
+//     long Id,
+//     string Action,
+//     string EntityType,
+//     string? EntityId,
+//     string Outcome,
+//     string? Description,
+//     string? CorrelationId,
+//     long? ActorUserId,
+//     long? TransactionId,
+//     DateTime CreatedAtUtc
+// )
+// {
+//     public static AuditLogResponse FromModel(AuditLog log) => new(
+//         log.Id,
+//         log.Action,
+//         log.EntityType,
+//         log.EntityId,
+//         log.Outcome.ToString(),
+//         log.Description,
+//         log.CorrelationId,
+//         log.ActorUserId,
+//         log.TransactionId,
+//         log.CreatedAtUtc
+//     );
+// }
 
